@@ -16,7 +16,7 @@ try:
 		flag = True
 
 		while True:
-			system('clear')
+			system('cls')
 			print('\r\n\r\n\r\n')
 			print('         _   _   _   _   _   _   _     _   _     _   _   _   _   _   _  ')
 			print('        / \ / \ / \ / \ / \ / \ / \   / \ / \   / \ / \ / \ / \ / \ / \ ')
@@ -101,7 +101,7 @@ try:
 
 				request = 'https://vk.com/groups?act=catalog&c%5Bper_page%5D=40&c%5Bq%5D='+text+'&c%5Bsection%5D=communities'
 
-				driver = webdriver.Firefox(executable_path='./geckodriver')
+				driver = webdriver.Firefox(executable_path='./geckodriver.exe')
 
 				link = driver.get(request)
 
@@ -120,7 +120,7 @@ try:
 
 				source = driver.page_source
 				find = re.findall(r'(?<=\bclass="labeled title"><a href=")[^"\?]+', source)
-				system('clear')
+				system('cls')
 				for k in range(len(find)):
 					link = session.get(url+find[k])
 					print('[*] Просмотр группы('+url+find[k]+')['+str(k+1)+' из '+str(len(find))+']...')
@@ -139,7 +139,7 @@ try:
 				print('[-] Неверные данные конфигурации!')
 				input("Press Enter to continue...")
 		else:
-			system('clear')
+			system('cls')
 			print('[*] Спасибо за использование скрипта! :)')
 			input("Press Enter to continue...")
 			break
