@@ -10,6 +10,8 @@ try:
 	import time
 	from os import system
 
+	from selenium.webdriver import ActionChains
+
 	gflag = True
 
 	while gflag:
@@ -69,7 +71,8 @@ try:
 				print('Неверный ввод!')
 				continue
 			
-		url = 'https://vk.com'
+		url = 'https://m.vk.com'
+		url1 = 'https://vk.com'
 
 
 		if flag:
@@ -85,51 +88,89 @@ try:
 			data = session.get(url, headers=headers)
 			page = lxml.html.fromstring(data.content)
 			  
+
+#			print(data.text)
+
+
 			form = page.forms[0]
 
 			s = open('settings.cfg','r')
 			st = s.read()
 			sts = st.split('***')
 
+
+#			print(str(sts[0]))
+#			print(str(sts[1]))
+
 			form.fields['email'] = str(sts[0])
 			form.fields['pass'] = str(sts[1])
 			  
 			response = session.post(form.action, data=form.form_values())
-			print('onLoginDone' in response.text)
-			if ('onLoginDone' in response.text) == True:
+
+
+
+			print(response)
+
+
+			print('vk.com/feed' in response.text)
+#			print('onLoginDone' in response.text)
+			if ('vk.com/feed' in response.text) == True:
+#			if ('onLoginDone' in response.text) == True:
 				text = input("Введите запрос: ")
 
-				request = 'https://vk.com/groups?act=catalog&c%5Bper_page%5D=40&c%5Bq%5D='+text+'&c%5Bsection%5D=communities'
+				request = 'https://vk.com/groups?act=catalog&c%5Bq%5D='+text
+#				request = 'https://vk.com/groups?act=catalog&c%5Bper_page%5D=40&c%5Bq%5D='+text+'&c%5Bsection%5D=communities'
 
-				driver = webdriver.Firefox(executable_path='./geckodriver.exe')
+				driver = webdriver.Firefox(executable_path='./geckodriver')
 
-				link = driver.get(request)
+				link = driver.get(url)
 
 				time.sleep(4)
 
-				b_login = driver.find_element_by_id('email')
-				p_pass  = driver.find_element_by_id('pass')
-				l_btn = driver.find_element_by_id('login_button')
+				b_login = driver.find_element_by_name('email')
+##				b_login = driver.find_element_by_name('email')
+				p_pass  = driver.find_element_by_name('pass')
+##				p_pass  = driver.find_element_by_name('pass')
+				l_btn = driver.find_element_by_class_name('wide_button')
+##				l_btn = driver.find_element_by_id('index_login_button')
+
+
+
+#				b_login.click()
 
 				b_login.send_keys(str(sts[0]))
+
+#				p_pass.click()				
+
 				p_pass.send_keys(str(sts[1]))
+
+
+
 				l_btn.click()
+
+				link = driver.get(request)
 
 				print('[!] Залогиньтесь в VK через браузер и прокрутите ленту в самый низ. \r\n')
 				waiting = input("Готовы? Начинаем? Когда будете готовы, нажмите Enter.")
 
 				source = driver.page_source
+
+
+# <span class="new_post_placeholder__text">Написать сообщение</span>
+
+
 				find = re.findall(r'(?<=\bclass="labeled title"><a href=")[^"\?]+', source)
 				system('cls')
 				for k in range(len(find)):
 					link = session.get(url+find[k])
 					print('[*] Просмотр группы('+url+find[k]+')['+str(k+1)+' из '+str(len(find))+']...')
 					time.sleep(int(sts[2]))
-					txt = re.findall(r'(\<span class\="new_post_placeholder"\>Написать сообщение\<\/span\>)', str(link.text))
+					txt = re.findall(r'(\<span class\="new_post_placeholder__text"\>Написать сообщение\<\/span\>)', str(link.text))
+#					txt = re.findall(r'(\<span class\="new_post_placeholder"\>Написать сообщение\<\/span\>)', str(link.text))
 					if txt:
-						print('[+] Открытая стена:'+url+find[k])
+						print('[+] Открытая стена:'+url1+find[k])
 						f = open('results.'+text+'.txt', 'a')
-						f.write(url+find[k]+'\r\n')
+						f.write(url1+find[k]+'\r\n')
 						f.close()
 				flag = False
 				s.close()
